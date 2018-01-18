@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<ul>
+		<li>消息内容</li>
+	</ul>
+	<input type="text">
+</body>
+<script type="text/javascript">
+// 1.node server.js
+// 2.在浏览器地址输入本文件地址 xxx.index.html
+var ul = document.querySelector("ul");
+var input = document.querySelector("input");
+// 1. new WebSocket实例
+var ws = new WebSocket("ws://localhost:3030");
+// 2.执行上面语句之后，客户端就会与服务器进行连接。
+
+//连接成功时触发的方法
+ws.onopen = function(){
+	console.log("连接成功！")
+}
+ws.onerror = function(){
+	console.log("连接失败！")
+}
+//接收的消息时触发的方法
+ws.onmessage = function(msg){
+	console.log(msg);
+	add(msg.data);
+}
+
+input.onkeydown = function (e) {
+	if (e.keyCode==13) {
+		// add(this.value)
+		ws.send(this.value)
+		input.value = "";
+	}
+}
+//添加内容函数
+function add(con){
+var li = document.createElement("li");
+	li.innerHTML = con;
+	ul.appendChild(li);	
+}
+
+</script>
+</html>
+
+
+

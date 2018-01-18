@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+	canvas{
+		border: 5px solid black;
+	}
+	</style>
+</head>
+<body>
+	<canvas width="400" height="400"></canvas>
+</body>
+<script type="text/javascript" src="socket.io.min.js"></script>
+<script type="text/javascript">
+// 1.node server2.js
+// 2.在浏览器输入localhost:7070/mine.html
+// 3.在浏览器开一页新输入localhost:7070/yours.html
+var socket = io.connect()
+socket.on("connect",function(){
+	console.log("连接成功！")
+})
+
+var canvas = document.querySelector("canvas");
+var ctx = canvas.getContext("2d");
+ctx.lineWidth = 5;
+var dx = 5+canvas.offsetLeft;
+var dy = 5+canvas.offsetTop;
+canvas.onmousedown = function (e) {
+	var x = e.clientX-dx;
+	var y = e.clientY-dy;
+	ctx.beginPath();
+	ctx.moveTo(x,y);
+
+	socket.emit("down",{x:x,y:y});
+
+	canvas.onmousemove = function(e){
+		var x = e.clientX-dx;
+		var y = e.clientY-dy;
+		ctx.lineTo(x,y);
+		ctx.stroke();
+		socket.emit("move",{x:x,y:y});
+	}
+	document.onmouseup = function(){
+		canvas.onmousemove = '';
+		ctx.closePath();
+		socket.emit("up");
+	}
+}
+
+
+</script>
+</html>
+
+
+
+
+
+
